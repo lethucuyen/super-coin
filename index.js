@@ -64,7 +64,8 @@ app.post("/testNotAllowedAction", (req, res) => {
 });
 
 app.post("/testWallets", (req, res) => {
-  // Test wallet
+  // Tao vi
+
   console.log("start two nodes node1 and node2");
   const node1 = new Node();
   const node2 = new Node();
@@ -77,7 +78,7 @@ app.post("/testWallets", (req, res) => {
   console.log("node1 should have 0 coins");
   console.log(node1.getBalance());
 
-  console.log("node1 should have 0 coins");
+  // Nap 200 coin vao tai khoan lam von
 
   console.log("add the transaction to node1");
   let txs = [];
@@ -93,6 +94,27 @@ app.post("/testWallets", (req, res) => {
 
   console.log("node1 should have 200 coins");
   console.log(node1.getBalance());
+
+  // Node1 goi tien cho node2
+
+  console.log(
+    "create transaction where node1 gives node2 10 coins with fee of 5"
+  );
+  const tx = node1.createTransaction(
+    [{ amount: 10, address: node2.wallet.publicKey, fee: 5 }],
+    "pw1"
+  );
+  console.log([tx]);
+
+  console.log("add the transaction to node2");
+  node2.mempool.addTransaction(tx);
+  console.log(node2.mempool);
+
+  // Dao
+  console.log("node2 mines the new transaction");
+  node2.mine();
+  console.log("So du cua node1:", node1.getBalance());
+  console.log("So du cua node2:", node2.getBalance());
 
   res.json({
     succeeded: true,

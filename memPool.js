@@ -12,7 +12,7 @@ module.exports = class MemPool {
       // Khong bi trung lap spent (funds)
       this.isTransactionDoubleSpent(transaction);
       console.log([transaction]);
-      this.transactions = this.transactions.push(transaction);
+      this.transactions.push(transaction);
     } catch (err) {
       throw err;
     }

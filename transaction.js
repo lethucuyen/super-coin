@@ -7,8 +7,9 @@ module.exports = class Transaction {
     this.type = type; // type: "regular" | "fee" | "reward"
     this.inputs = inputs; // tro toi dia chi ma no chua xai tien toi ('unspent')
     this.outputs = outputs; // nguoi nhan va so tien
-    this.reward = 100;
   }
+
+  static reward = 100;
 
   // Ham GET tinh toan hash dua tren du lieu cua chinh no
   get hash() {
@@ -31,9 +32,14 @@ module.exports = class Transaction {
   // Ham GET lay ra phi giao dich neu co (chuyen hoa hong hay phan thuong thi khong co phi nay)
   get fee() {
     if (this.type === "regular") {
+      console.log("fee:", this.inputTotal - this.outputTotal);
       return this.inputTotal - this.outputTotal;
     } else {
-      throw `Transaction type ${this.type} does not have fees`;
+      console.log(
+        `Transaction type ${this.type} does not have fees. So: fee=0`
+      );
+      return 0;
+      // throw `Transaction type ${this.type} does not have fees.`;
     }
   }
 
