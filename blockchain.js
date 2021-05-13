@@ -3,7 +3,7 @@ const CryptoJS = require("crypto-js");
 // const BLOCK_GENERATION_INTERVAL = 10;
 // const DIFFICULTY_ADJUSTMENT_INTERVAL = 2016;
 
-class Blockchain {
+module.exports = class Blockchain {
   constructor() {
     this.blockchain = [Block.getGenesisBlock];
     // this.difficulty = 4;
@@ -243,6 +243,4 @@ class Blockchain {
 
     return this.isValidChain(tempBlocks);
   }
-}
-
-module.exports = new Blockchain();
+};

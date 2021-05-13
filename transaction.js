@@ -1,5 +1,6 @@
 const CryptoJS = require("crypto-js");
-const txIn = require("./txIn");
+const TxIn = require("./txIn");
+const TxOut = require("./txOut");
 
 module.exports = class Transaction {
   constructor(type = "", inputs = [], outputs = []) {
@@ -61,7 +62,9 @@ module.exports = class Transaction {
   // Ham xac nhan chu ky cho cac giao dich hop le hay khong
   verifyInputSignatures() {
     try {
-      this.inputs.forEach((input) => input.verifySignature());
+      this.inputs.forEach((input) => {
+        TxIn.verifySignature(input);
+      });
     } catch (err) {
       throw err;
     }

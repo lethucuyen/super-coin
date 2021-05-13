@@ -8,7 +8,7 @@ module.exports = class TxIn {
     txIndex = 0,
     amount = 0,
     address = "",
-    _signature = ""
+    signature = ""
   ) {
     this.txHash = txHash; // tro toi id(hash du lieu) va index cua unspent transaction output
     this.txIndex = txIndex;
@@ -37,13 +37,13 @@ module.exports = class TxIn {
   }
 
   // Ham kiem tra chu ky co hop le hay khong
-  verifySignature() {
+  static verifySignature(input) {
     const inputHash = CryptoJS.SHA256(
-      this.txHash + this.txIndex + this.amount + this.address
+      input.txHash + input.txIndex + input.amount + input.address
     ).toString();
-    const key = ec.keyFromPublic(this.address, "hex");
-    if (!key.verify(inputHash, this.signature)) {
-      throw `Input ${this} has wrong signature.`;
+    const key = ec.keyFromPublic(input.address, "hex");
+    if (!key.verify(inputHash, input.signature)) {
+      throw `Input ${input} has wrong signature.`;
     }
   }
 
