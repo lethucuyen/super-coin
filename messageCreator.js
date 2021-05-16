@@ -2,6 +2,13 @@
 const { MessageTypeEnum } = require("./messageType");
 
 module.exports = class MessageCreator {
+  static getProfile(profile) {
+    return {
+      type: MessageTypeEnum.REQUEST_PROFILE,
+      payload: profile,
+    };
+  }
+
   static getLatestBlock() {
     return {
       type: MessageTypeEnum.REQUEST_LATEST_BLOCK,

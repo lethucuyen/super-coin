@@ -49,16 +49,17 @@ module.exports = class Peer extends Node {
   incomingMsgHandler(peer) {
     peer.on("data", (message) => {
       // node to sever
-      console.log(message);
-      // const messageJS = JSON.parse(message.toString("utf8"));
+      const messageJS = JSON.parse(message || {});
       try {
-        this.handleIncomingMsg(peer, message);
+        this.handleIncomingMsg(peer, messageJS);
       } catch (e) {}
     });
   }
 
   // (Helper)
   handleIncomingMsg(peer, message) {
+    console.log("handle incoming message");
+    console.log([message]);
     // Ktra msg va co xu ly tuong ung
     switch (message.type) {
       case MessageTypeEnum.REQUEST_LATEST_BLOCK:
@@ -92,9 +93,64 @@ module.exports = class Peer extends Node {
       case MessageTypeEnum.RECEIVE_REMOVE_TRANSACTION:
         this.mempool.removeTransaction(Transaction.fromJS(message.payload));
         break;
+      case MessageTypeEnum.REQUEST_PROFILE:
+        this.sendMsg(peer, MessageCreator.getProfile(this.profileInfoHandler()));
+        break;
+      case MessageTypeEnum.MINE_NEW_BLOCK:
+        let balance = this.getBalance();
+        if (!message.payload) {
+          // Nap 100 coin moi lan vao tai khoan lam von
+          const txs = [this.rewardTransaction(this.wallet.publicKey)];
+          this.blockchain.mine(txs);
+        } else {
+
+        }
+
+        this.sendMsg(
+          peer,
+          MessageCreator.getProfile(this.profileInfoHandler())
+        );
+        break;
       default:
         throw `Invalid message type ${message.type} from ${peer}`;
     }
+  }
+
+  profileInfoHandler() {
+    return {
+      chain: this.blockchainInfoHandler(this.blockchain.blockchain),
+      balance: this.getBalance(),
+      unconfirmed_txs: this.mempool.transactions.map((transaction) => ({
+        from: this.wallet.publicKey,
+        to: transaction.outputs[0].address,
+        amount: transaction.amount,
+      })),
+    };
+  }
+
+  // Ham xu ly du lieu blockchain truoc khi tra ve
+  blockchainInfoHandler(chain) {
+    try {
+      const blocks = chain.map((block) => ({
+        ...block,
+        transactions: block.transactions.map((transaction) => {
+          console.log(transaction);
+          console.log(this.mempool.transactions.includes(transaction));
+          return {
+            from: transaction.type == "reward" ? "🏆 REWARD" : "",
+            to: transaction.outputs[0].address,
+            status: this.mempool.transactions.includes(transaction)
+              ? "unspent"
+              : "spent",
+            amount: transaction.outputTotal,
+          };
+        }),
+      }));
+      return blocks;
+    } catch (e) {
+      console.log(e);
+    }
+    return [];
   }
 
   // Ham xu ly du lieu blockchain moi nhat => broadcast cho cac node xung quanh duoc biet
