@@ -40,8 +40,8 @@ module.exports = class Peer extends Node {
   // Ham goi msg den node (co the la goi 1 yeu cau hoac goi du lieu tra ve the yeu cau)
   sendMsg(peer, payload) {
     const payloadStr = JSON.stringify(payload); // to JSON
-    console.log("send message");
-    console.log([payloadStr]);
+    // console.log("send message");
+    // console.log([payloadStr]);
     peer.emit("data", payloadStr); // server to node
   }
 
@@ -94,16 +94,17 @@ module.exports = class Peer extends Node {
         this.mempool.removeTransaction(Transaction.fromJS(message.payload));
         break;
       case MessageTypeEnum.REQUEST_PROFILE:
-        this.sendMsg(peer, MessageCreator.getProfile(this.profileInfoHandler()));
+        this.sendMsg(
+          peer,
+          MessageCreator.getProfile(this.profileInfoHandler())
+        );
         break;
       case MessageTypeEnum.MINE_NEW_BLOCK:
-        let balance = this.getBalance();
-        if (!message.payload) {
+        if (!message.payload.transaction) {
           // Nap 100 coin moi lan vao tai khoan lam von
           const txs = [this.rewardTransaction(this.wallet.publicKey)];
           this.blockchain.mine(txs);
         } else {
-
         }
 
         this.sendMsg(
