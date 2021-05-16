@@ -7,6 +7,9 @@ const Node = require("./node");
 
 const app = express();
 
+const http = require("http");
+const server = http.createServer(app);
+
 require("dotenv").config({ silent: process.env.NODE_ENV === "production" });
 
 app.use(cors());
@@ -25,11 +28,22 @@ app.use(function (err, req, res, next) {
   });
 });
 
-app.listen(process.env.PORT || 3006, () =>
+server.listen(process.env.PORT || 3006, () =>
   console.log(
     `Server is running at http://localhost:${process.env.PORT || 3006}`
   )
 );
+
+/* ============================================================================*/
+
+const Peer = require("./peer");
+var io = require("socket.io")(server);
+
+const peer = new Peer();
+
+peer.startSocket(io);
+
+/* ============================================================================*/
 
 app.post("/mine", (req, res) => {
   blockchain.mine(req.body.newBlockData);

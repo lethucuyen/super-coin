@@ -9,7 +9,7 @@
     "dev": "nodemon index.js",
     "debug": "nodemon --inspect index.js"
   },
-  "author": "",
+  "author": "Mandy",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
@@ -19,7 +19,10 @@
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "lodash": "^4.17.21",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "peer-exchange": "^2.2.0",
+    "wrtc": "^0.4.7",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
