@@ -9,6 +9,16 @@ module.exports = class MessageCreator {
     };
   }
 
+  static getPeers(peers) {
+    return {
+      type: MessageTypeEnum.REQUEST_PEERS,
+      payload: peers.map((peer) => ({
+        id: peer.id,
+        name: peer.name,
+      })),
+    };
+  }
+
   static getLatestBlock() {
     return {
       type: MessageTypeEnum.REQUEST_LATEST_BLOCK,

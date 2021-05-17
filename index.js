@@ -36,12 +36,10 @@ server.listen(process.env.PORT || 3006, () =>
 
 /* ============================================================================*/
 
-const Peer = require("./peer");
+const peers = require("./peers");
 var io = require("socket.io")(server);
 
-const peer = new Peer();
-
-peer.startSocket(io);
+peers.startSocket(io);
 
 /* ============================================================================*/
 

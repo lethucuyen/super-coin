@@ -15,6 +15,8 @@ module.exports = class Node {
     this.mempool = mempool;
     this.wallet = wallet;
     this.reward = 100;
+    this.id = "";
+    this.name = "";
   }
 
   newWallet(password) {
@@ -58,7 +60,7 @@ module.exports = class Node {
       );
       return inputsForAddress.reduce((total, input) => total + input.amount, 0);
     } catch (error) {
-     console.log("[GET_BALANCE]", error);
+      console.log("[GET_BALANCE]", error);
     }
   }
 
@@ -158,10 +160,16 @@ module.exports = class Node {
     let outputs = [];
     try {
       this.blockchain.blockchain.forEach((block) => {
-        block.transactions.forEach((tx, i) => {
+        block.transactions.forEach((tx, index) => {
           tx.outputs.forEach((output) => {
             if (output.address === this.wallet.publicKey) {
-              let input = new TxIn(i, tx.hash, output.amount, output.address);
+              console.log(index);
+              let input = new TxIn(
+                tx.hash,
+                index,
+                output.amount,
+                output.address
+              );
               outputs.push(input);
             }
           });
