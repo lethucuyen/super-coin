@@ -1,7 +1,19 @@
 // Peer-to-peer Helper
 const { MessageTypeEnum } = require("./messageType");
+const Wallet = require("./wallet");
 
 module.exports = class MessageCreator {
+  static sendWallet(wallet = new Wallet(), password) {
+    return {
+      type: MessageTypeEnum.REQUEST_NEW_WALLET,
+      payload: {
+        yourAddress: wallet.publicKey,
+        privateKey: wallet.getPrivateKey(password),
+      },
+      password: password,
+    };
+  }
+
   static getProfile(profile) {
     return {
       type: MessageTypeEnum.REQUEST_PROFILE,

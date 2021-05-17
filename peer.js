@@ -2,12 +2,14 @@ const _clone = require("lodash/cloneDeep");
 const Exchange = require("peer-exchange");
 const Blockchain = require("./blockchain");
 const Node = require("./node");
+const Wallet = require("./wallet");
 const Transaction = require("./transaction");
 const { MessageTypeEnum } = require("./messageType");
 const MessageCreator = require("./messageCreator");
 
 module.exports = class Peer extends Node {
   constructor() {
+    console.log("new peer");
     super(...arguments);
     this.connectedPeers = [];
   }
@@ -23,45 +25,63 @@ module.exports = class Peer extends Node {
 
   // Ham xu ly va lang nghe khi co node ket noi socket toi server
   incomingConnection(peer) {
+    console.log("push a new connected peer");
     this.connectedPeers.push(peer);
+    console.log(this.connectedPeers.length);
     this.handleClosedConnection(peer);
     this.incomingMsgHandler(peer);
     this.peerErrorHandler(peer);
-    // Yeu cau goi du lieu tai node len de dong bo
-    this.sendMsg(peer, MessageCreator.getLatestBlock());
-    this.sendMsg(peer, MessageCreator.getTransactions());
-  }
-
-  // Ham quang loi den server
-  peerErrorHandler(peer) {
-    peer.on("error", (e) => {});
+    // Yeu cau node lay du lieu ve (Bug: Web chua khoi tao socket => ko can thiet do da lay profile thay the)
+    // setTimeout(function () {
+    //   this.sendMsg(peer, MessageCreator.getLatestBlock());
+    //   this.sendMsg(peer, MessageCreator.getTransactions());
+    // }, 7000);
   }
 
   // Ham goi msg den node (co the la goi 1 yeu cau hoac goi du lieu tra ve the yeu cau)
   sendMsg(peer, payload) {
     const payloadStr = JSON.stringify(payload); // to JSON
-    // console.log("send message");
-    // console.log([payloadStr]);
+    console.log("send message");
+    console.log([payloadStr]);
     peer.emit("data", payloadStr); // server to node
   }
 
   // Ham xu ly thong diep nhan duoc khi co node ket noi socket toi server
   incomingMsgHandler(peer) {
+    console.log("this peer is listening incoming message..");
     peer.on("data", (message) => {
       // node to sever
       const messageJS = JSON.parse(message || {});
+      console.log("incoming message -->", messageJS.type);
       try {
         this.handleIncomingMsg(peer, messageJS);
-      } catch (e) {}
+      } catch (e) {
+        console.log("[INCOMING_MSG_HANDLER]", e);
+      }
     });
   }
 
   // (Helper)
   handleIncomingMsg(peer, message) {
-    console.log("handle incoming message");
-    console.log([message]);
+    // console.log("handle incoming message");
+    // console.log([message]);
     // Ktra msg va co xu ly tuong ung
     switch (message.type) {
+      case MessageTypeEnum.REQUEST_NEW_WALLET:
+        console.log([message.payload]);
+        console.log("create a new wallet with password");
+        const wallet = new Wallet(message.payload.password);
+        this.sendMsg(
+          peer,
+          MessageCreator.sendWallet(wallet, message.payload.password)
+        );
+        break;
+      case MessageTypeEnum.REQUEST_PEERS:
+        this.sendMsg(
+          peer,
+          MessageCreator.sendWallet(wallet, message.payload.password)
+        );
+        break;
       case MessageTypeEnum.REQUEST_LATEST_BLOCK:
         const latestBlock = this.blockchain.latestBlock;
         // Phan hoi lai
@@ -120,7 +140,7 @@ module.exports = class Peer extends Node {
   profileInfoHandler() {
     return {
       chain: this.blockchainInfoHandler(this.blockchain.blockchain),
-      balance: this.getBalance(),
+      balance: this.getBalance(this.wallet.publicKey),
       unconfirmed_txs: this.mempool.transactions.map((transaction) => ({
         from: this.wallet.publicKey,
         to: transaction.outputs[0].address,
@@ -189,11 +209,11 @@ module.exports = class Peer extends Node {
   }
 
   // Ham xu ly khi peer nao do ngat ket noi
-  handleClosedConnection(socket) {
-    socket.on("disconnect", () => {
-      console.log(`User: ${socket.id} was disconnected`);
+  handleClosedConnection(peer) {
+    peer.on("disconnect", () => {
+      console.log(`User: ${peer.id} was disconnected`);
       this.connectedPeers.splice(
-        this.search(socket.id.toString(), this.connectedPeers),
+        this.search(peer.id.toString(), this.connectedPeers),
         1
       );
     });
@@ -206,6 +226,11 @@ module.exports = class Peer extends Node {
         return i;
       }
     }
+  }
+
+  // Ham quang loi den server
+  peerErrorHandler(peer) {
+    peer.on("error", (e) => {});
   }
 
   // connectToPeer(host, port) {

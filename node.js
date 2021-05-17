@@ -49,7 +49,8 @@ module.exports = class Node {
     }
   }
 
-  // Ham lay ra so du cua 1 tai khoan dua vao 'public key'
+  // Ham lay ra so du cua 1 tai khoan dua vao address
+  // (Your balance is the total of all of your unspent transaction outputs.)
   getBalance(address = this.wallet.publicKey) {
     try {
       const inputs = this.getUnspentInputs();
@@ -58,7 +59,7 @@ module.exports = class Node {
       );
       return inputsForAddress.reduce((total, input) => total + input.amount, 0);
     } catch (error) {
-     console.log("[GET_BALANCE]", error);
+      console.log("[GET_BALANCE]", error);
     }
   }
 
@@ -69,6 +70,7 @@ module.exports = class Node {
         (total, paid) => total + paid.amount,
         0
       );
+      // Specify a fee for the miner who mines this transaction.
       const fee = payments.reduce((total, payment) => total + payment.fee, 0);
       const unspentInputs = this.getUnspentInputs();
       let inputTotal = 0;

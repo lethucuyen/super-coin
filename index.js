@@ -39,8 +39,12 @@ server.listen(process.env.PORT || 3006, () =>
 const Peer = require("./peer");
 var io = require("socket.io")(server);
 
+console.log("create new peer");
+// Declare
 const peer = new Peer();
 
+console.log("start socket");
+// connect to peer with socket
 peer.startSocket(io);
 
 /* ============================================================================*/

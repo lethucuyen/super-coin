@@ -18,7 +18,8 @@ module.exports = class MemPool {
     }
   }
 
-  //  Ham ktra 1 transaction co bi trung lap spent (funds) hay khong
+  //  Ham ktra truong hop chi tiêu cho một giao dịch đã chi tiêu trước đó
+  // (Đầu ra đã chi tiêu không thể được sử dụng lại làm đầu vào trong một giao dịch khác.)
   isTransactionDoubleSpent(transaction) {
     try {
       if (this.transactions.length !== 0) {
