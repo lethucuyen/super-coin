@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
     "dev": "nodemon index.js",
-    "debug": "nodemon --inspect index.js"
+    "build-app": "npm run build-client && npm install && npm start",
+    "build-client": "mkdir -p public && cd client && npm run build-app && cd ..",
+    "start": "pm2 start index.js -n Vuetomate && pm2 monit"
   },
   "author": "Mandy",
   "license": "MIT",

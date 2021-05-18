@@ -21,12 +21,15 @@ app.get("/", (req, res) => {
   return res.end("Super Coin - Cryptocurrency Project using Node.js");
 });
 
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   console.error(err.stack);
   res.status(500).json({
     error_message: "Something broke!",
   });
 });
+
+// We'll use the public directory to serve the Vue App
+app.use(express.static("public"));
 
 server.listen(process.env.PORT || 3006, () =>
   console.log(
