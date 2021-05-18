@@ -9,8 +9,19 @@ module.exports = class MessageCreator {
       payload: {
         yourAddress: wallet.publicKey,
         privateKey: wallet.getPrivateKey(password),
+        name: wallet.name,
       },
       password: password,
+    };
+  }
+
+  static getPeers(wallets) {
+    return {
+      type: MessageTypeEnum.REQUEST_PEERS,
+      payload: wallets.map((wallet) => ({
+        name: wallet.name,
+        address: wallet.publicKey,
+      })),
     };
   }
 

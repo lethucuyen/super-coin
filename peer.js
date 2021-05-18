@@ -1,4 +1,5 @@
 const _clone = require("lodash/cloneDeep");
+const faker = require("faker");
 const Exchange = require("peer-exchange");
 const Blockchain = require("./blockchain");
 const Node = require("./node");
@@ -12,15 +13,6 @@ module.exports = class Peer extends Node {
     console.log("new peer");
     super(...arguments);
     this.connectedPeers = [];
-  }
-
-  startSocket(io) {
-    io.on("connection", (peer) => {
-      // On connection of socket
-      console.log("New user connected");
-      console.log(peer.id);
-      this.incomingConnection(peer);
-    });
   }
 
   // Ham xu ly va lang nghe khi co node ket noi socket toi server
@@ -63,8 +55,6 @@ module.exports = class Peer extends Node {
 
   // (Helper)
   handleIncomingMsg(peer, message) {
-    // console.log("handle incoming message");
-    // console.log([message]);
     // Ktra msg va co xu ly tuong ung
     switch (message.type) {
       case MessageTypeEnum.REQUEST_NEW_WALLET:
@@ -77,10 +67,7 @@ module.exports = class Peer extends Node {
         );
         break;
       case MessageTypeEnum.REQUEST_PEERS:
-        this.sendMsg(
-          peer,
-          MessageCreator.sendWallet(wallet, message.payload.password)
-        );
+        console.log("todo something");
         break;
       case MessageTypeEnum.REQUEST_LATEST_BLOCK:
         const latestBlock = this.blockchain.latestBlock;
@@ -138,7 +125,14 @@ module.exports = class Peer extends Node {
   }
 
   profileInfoHandler() {
+    try {
+      console.log(this.wallet.name);
+    } catch (error) {
+      console.log(error);
+    }
     return {
+      name: this.wallet.name,
+      address: this.wallet.publicKey,
       chain: this.blockchainInfoHandler(this.blockchain.blockchain),
       balance: this.getBalance(this.wallet.publicKey),
       unconfirmed_txs: this.mempool.transactions.map((transaction) => ({
