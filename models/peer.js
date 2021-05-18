@@ -15,6 +15,15 @@ module.exports = class Peer extends Node {
     this.connectedPeers = [];
   }
 
+  startSocket(io) {
+    io.on("connection", (peer) => {
+      // On connection of socket
+      console.log("New user connected");
+      console.log(peer.id);
+      this.incomingConnection(peer);
+    });
+  }
+
   // Ham xu ly va lang nghe khi co node ket noi socket toi server
   incomingConnection(peer) {
     console.log("push a new connected peer");

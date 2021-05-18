@@ -2,8 +2,8 @@ const express = require("express");
 var cors = require("cors");
 const logger = require("morgan");
 require("express-async-errors");
-const blockchain = require("./blockchain");
-const Node = require("./node");
+const blockchain = require("./models/blockchain");
+const Node = require("./models/node");
 
 const app = express();
 
@@ -17,11 +17,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(logger("dev"));
 
+// We'll use the public directory to serve the Vue App
+app.use(express.static("public"));
+
 app.get("/", (req, res) => {
   return res.end("Super Coin - Cryptocurrency Project using Node.js");
 });
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   console.error(err.stack);
   res.status(500).json({
     error_message: "Something broke!",
@@ -39,7 +42,7 @@ server.listen(process.env.PORT || 3006, () =>
 
 /* ============================================================================*/
 
-const Peer = require("./peer");
+const Peer = require("./models/peer");
 var io = require("socket.io")(server);
 
 console.log("create new peer");

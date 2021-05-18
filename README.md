@@ -1,6 +1,6 @@
 # super_coin
 
-Super Coin - Cryptocurrency Project using NodeJS
+Super Coin - Cryptocurrency Project - A fullstack Vue.js app with a working node.js backend
 
 ## Demo
 
@@ -34,5 +34,5 @@ command line:
 $ npm install
 
 # Run the app
-$ npm start
+$ npm run build-app
 ```

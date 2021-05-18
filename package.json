@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "build-app": "npm run build-client && npm install && npm start",
-    "build-client": "mkdir -p public && cd client && npm run build-app && cd ..",
-    "start": "pm2 start index.js -n Vuetomate && pm2 monit"
+    "build-app": "npm run build-client && npm start",
+    "build-client": "cd client && npm run build-app && cd ..",
+    "start": "nodemon index.js"
   },
   "author": "Mandy",
   "license": "MIT",
@@ -18,11 +17,12 @@
     "elliptic": "^6.4.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
+    "faker": "^5.5.3",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "peer-exchange": "^2.2.0",
-    "wrtc": "^0.4.7",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "wrtc": "^0.4.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
