@@ -7,7 +7,17 @@ Super Coin - Cryptocurrency Project - A fullstack Vue.js app with a working node
 [Github](https://github.com/lethucuyen/super_coin_ui)
 [Github](https://github.com/lethucuyen/super_coin)
 
-## Demo
+##Refs: 
+
+[coindemo.io](https://coindemo.io/)
+[coin-cli](https://github.com/seanjameshan/coin-cli)
+[Blockchain using NodeJS and Socket.io](https://dev.to/sadarshannaiynar/blockchain-using-nodejs-and-socketio-5gbe)
+[github.com/morco6/Blockchain-Project-websocket]https://github.com/morco6/Blockchain-Project-websocket
+
+
+##Demo
+
+[Youtube](https://www.youtube.com/watch?v=033mwrKyt5o)
 
 ...
 
