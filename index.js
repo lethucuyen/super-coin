@@ -34,10 +34,10 @@ app.use(function (err, req, res, next) {
 // We'll use the public directory to serve the Vue App
 app.use(express.static("public"));
 
-server.listen(process.env.PORT || 3006, () =>
-  console.log(
-    `Server is running at http://localhost:${process.env.PORT || 3006}`
-  )
+const port = process.env.PORT || process.argv[2];
+
+server.listen(port, () =>
+  console.log(`Server is running at http://localhost:${port}`)
 );
 
 /* ============================================================================*/

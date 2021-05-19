@@ -2,6 +2,11 @@
 
 Super Coin - Cryptocurrency Project - A fullstack Vue.js app with a working node.js backend
 
+## Related Repo:
+
+[Github](https://github.com/lethucuyen/super_coin_ui)
+[Github](https://github.com/lethucuyen/super_coin)
+
 ## Demo
 
 ...
@@ -30,9 +35,6 @@ You'll need [Git](https://git-scm.com) to run the project from source. From your
 command line:
 
 ```bash
-# Install dependencies
-$ npm install
-
 # Run the app
 $ npm run build-app
 ```
