@@ -17,6 +17,15 @@ module.exports = class TxIn {
     if (signature) this._signature = signature; // chung thuc (duoc ky bang 'private key')
   }
 
+  getDetails() {
+    return {
+      txHash: this.txHash,
+      txIndex: this.txIndex,
+      amount: this.amount,
+      address: this.address,
+    };
+  }
+
   // Ham lay chu ky cho giao dich
   get signature() {
     return this._signature;

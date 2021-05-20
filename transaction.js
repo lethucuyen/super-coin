@@ -3,10 +3,12 @@ const TxIn = require("./txIn");
 const TxOut = require("./txOut");
 
 module.exports = class Transaction {
-  constructor(type = "", inputs = [], outputs = []) {
+  constructor(type = "", inputs = [], outputs = [], from = "", to = "") {
     this.type = type; // type: "regular" | "fee" | "reward"
     this.inputs = inputs; // tro toi dia chi ma no chua xai tien toi ('unspent')
     this.outputs = outputs; // nguoi nhan va so tien
+    this.from = from;
+    this.to = to;
   }
 
   static reward = 100;
@@ -36,11 +38,21 @@ module.exports = class Transaction {
       return this.inputTotal - this.outputTotal;
     } else {
       console.log(
-        `Transaction type ${this.type} does not have fees. So: fee=0`
+        `Besides, transaction type ${this.type} does not have fees. So fee is 0`
       );
       return 0;
       // throw `Transaction type ${this.type} does not have fees.`;
     }
+  }
+
+  getDetails() {
+    return {
+      type: this.type.toUpperCase(),
+      from: this.from,
+      to: this.to,
+      inputs: this.inputs.map((input) => input.getDetails()),
+      outputs: this.outputs,
+    };
   }
 
   // Ham kiem tra tinh toan ven cua 1 transaction
@@ -103,7 +115,9 @@ module.exports = class Transaction {
     if (inputTotal > outputTotal) {
       const fee = inputTotal - outputTotal;
       const outputs = [{ address, amount: fee }];
-      return new Transaction("fee", [], outputs);
+      const from = this.wallet.publicKey;
+      const to = address;
+      return new Transaction("fee", [], outputs, from, to);
     } else {
       throw `No fees for transaction`;
     }
@@ -112,13 +126,17 @@ module.exports = class Transaction {
   // Ham chi tra phan thuong cho miner
   static rewardTransaction(address) {
     const outputs = [{ address, amount: this.reward }];
-    return new Transaction("reward", [], outputs);
+    const from = "REWARD";
+    const to = address;
+    return new Transaction("reward", [], outputs, from, to);
   }
 
   // Ham lay ra gia tri dang object tu json
   static fromJS(json) {
     const inputs = [json.inputs.map((input) => TxIn.fromJS(input))];
     const outputs = [json.outputs];
-    return new Transaction(json.type, inputs, outputs);
+    const from = json.from;
+    const to = json.to;
+    return new Transaction(json.type, inputs, outputs, from, to);
   }
 };

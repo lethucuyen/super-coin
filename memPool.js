@@ -4,6 +4,10 @@ module.exports = class MemPool {
     this.blockSize = blockSize;
   }
 
+  getDetails() {
+    return this.transactions.map((tx) => tx.getDetails());
+  }
+
   // Ham tao 1 transaction
   addTransaction(transaction) {
     try {
@@ -11,7 +15,6 @@ module.exports = class MemPool {
       transaction.isValidTransaction();
       // Khong bi trung lap spent (funds)
       this.isTransactionDoubleSpent(transaction);
-      console.log([transaction]);
       this.transactions.push(transaction);
     } catch (err) {
       throw err;

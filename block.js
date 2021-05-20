@@ -13,6 +13,7 @@ module.exports = class Block {
     this.transactions = transactions;
     this.hash = hash.toString();
     this.nonce = nonce;
+    this.createdDate = new Date();
   }
 
   static get getGenesisBlock() {
@@ -24,5 +25,17 @@ module.exports = class Block {
       "0000018035a828da0878ae92ab6fbb16be1ca87a02a3feaa9e3c2b6871931046",
       56551
     );
+  }
+
+  getDetails() {
+    return {
+      index: this.index,
+      previousHash: this.previousHash,
+      timestamp: this.timestamp,
+      transactions: this.transactions.map((tx) => tx.getDetails()),
+      hash: this.hash,
+      nonce: this.nonce,
+      createdDate: this.createdDate,
+    };
   }
 };

@@ -19,9 +19,7 @@ module.exports = class Node {
 
   newWallet(password) {
     this.wallet = new Wallet(password);
-    console.log([this.wallet]);
-    // console.log(this.wallet.publicKey);
-    // console.log(this.wallet.getPrivateKey(password));
+    // console.log([this.wallet]);
   }
 
   mine(address = this.wallet.publicKey) {
@@ -37,8 +35,8 @@ module.exports = class Node {
     } catch (e) {
       // log error but not fatal ?
     } finally {
-      console.log(txs);
       const nextBlock = this.blockchain.generateNextBlock(txs);
+
       try {
         this.blockchain.addBlock(nextBlock);
       } catch (e) {
@@ -50,6 +48,7 @@ module.exports = class Node {
   // Ham lay ra so du cua 1 tai khoan dua vao 'public key'
   getBalance(address = this.wallet.publicKey) {
     const inputs = this.getUnspentInputs();
+    // console.log(inputs);
     const inputsForAddress = inputs.filter(
       (input) => input.address === address
     );
@@ -75,6 +74,7 @@ module.exports = class Node {
 
       inputs.push(output);
     }
+
     let outputs = payments.map((payment) => ({
       amount: payment.amount,
       address: payment.address,
@@ -83,11 +83,15 @@ module.exports = class Node {
     let change = inputTotal - paidTotal - fee;
     if (change > 0) {
       const changeOutput = { amount: change, address: this.wallet.publicKey };
+      // console.log(changeOutput);
       outputs.push(changeOutput);
+      // console.log(outputs);
     }
     try {
       inputs = this.signInputs(inputs, password);
-      return new Transaction("regular", inputs, outputs);
+      const from = this.wallet.publicKey;
+      const to = payments[0].address;
+      return new Transaction("regular", inputs, outputs, from, to);
     } catch (err) {
       throw `Failed to create transactions: ${err}`;
     }
@@ -106,21 +110,46 @@ module.exports = class Node {
   }
 
   // (helper) Lay ra cac 'unspent tracsaction output' (funds) ma no chua xai toi (cua no)
-  getUnspentInputs() {
-    let inputs = this.getInputs();
-    let outputs = this.getOutputs();
+  getUnspentInputs(address = this.wallet.publicKey) {
+    let inputs = this.getInputs(address);
+    let outputs = this.getOutputs(address);
 
-    const unspentOutputs = outputs.filter((output) => !inputs.includes(output));
+    const isIncludes = (array, item) => {
+      for (let i = 0; i < array.length; i++) {
+        if (
+          array[i].txHash == item.txHash &&
+          array[i].txIndex == item.txIndex &&
+          array[i].amount == item.amount &&
+          array[i].address == item.address
+        ) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // remove signature to compare
+    const _inputs = inputs.map((input) => ({
+      txHash: input.txHash,
+      txIndex: input.txIndex,
+      amount: input.amount,
+      address: input.address,
+    }));
+
+    const unspentOutputs = outputs.filter(
+      (output) => !isIncludes(_inputs, output)
+    );
+
     return unspentOutputs;
   }
 
   // (helper)
-  getInputs() {
+  getInputs(address = this.wallet.publicKey) {
     let inputs = [];
     this.blockchain.blockchain.forEach((block) => {
       block.transactions.forEach((transaction) => {
         transaction.inputs.forEach((input) => {
-          if (input.address === this.wallet.publicKey) {
+          if (input.address === address) {
             inputs.push(input);
           }
         });
@@ -130,14 +159,22 @@ module.exports = class Node {
   }
 
   // (helper)
-  getOutputs() {
+  getOutputs(address = this.wallet.publicKey) {
     let outputs = [];
+    // this.blockchain.blockchain.forEach((block) => {
+    //   block.transactions.forEach((tx, i) => {
+    //     tx.outputs.forEach((output) => {
+    //       console.log(output);
+    //     });
+    //   });
+    // });
     this.blockchain.blockchain.forEach((block) => {
       block.transactions.forEach((tx, i) => {
         tx.outputs.forEach((output) => {
-          if (output.address === this.wallet.publicKey) {
+          if (output.address === address) {
             let input = new TxIn(i, tx.hash, output.amount, output.address);
             outputs.push(input);
+            // console.log(input);
           }
         });
       });
@@ -149,10 +186,12 @@ module.exports = class Node {
     const totalFee = regTxs.reduce((total, transaction) => {
       return total + transaction.fee;
     }, 0);
-    console.log("totalFee:", totalFee);
+    // console.log("total fee:", totalFee);
     if (totalFee > 0) {
       const outputs = [{ address, amount: totalFee }];
-      return new Transaction("fee", [], outputs);
+      const from = this.wallet.publicKey;
+      const to = address;
+      return new Transaction("fee", [], outputs, from, to);
     } else {
       throw "No fees in Transaction.";
     }
@@ -160,6 +199,8 @@ module.exports = class Node {
 
   rewardTransaction(address) {
     const outputs = [{ address, amount: this.reward }];
-    return new Transaction("reward", [], outputs);
+    const from = "REWARD";
+    const to = address;
+    return new Transaction("reward", [], outputs, from, to);
   }
 };

@@ -85,7 +85,7 @@ module.exports = class Blockchain {
       nextHash,
       nonce
     );
-    console.log([nextBlock]);
+    // console.log([nextBlock]);
     return nextBlock;
   }
 
@@ -212,9 +212,9 @@ module.exports = class Blockchain {
   // Ham dao 1 block da tim duoc
   mine(seed) {
     const newBlock = this.generateNextBlock(seed);
-    if (this.addBlock(newBlock)) {
-      console.log("Congratulations! A new block was mined.");
-    }
+    // if (this.addBlock(newBlock)) {
+    //   console.log("Congratulations! A new block was mined.");
+    // }
   }
 
   // Them 1 block vao mang luoi
@@ -231,7 +231,7 @@ module.exports = class Blockchain {
 
     for (let i = 0; i < this.blockchain.length; i++) {
       if (this.blockchain[i].index === parseInt(index)) {
-        console.log(true);
+        // console.log(true);
         let newBlock = { ...this.blockchain[i], data: newData };
         tempBlocks.push(newBlock);
       } else {
@@ -239,7 +239,7 @@ module.exports = class Blockchain {
       }
     }
 
-    console.log(tempBlocks);
+    // console.log(tempBlocks);
 
     return this.isValidChain(tempBlocks);
   }
